@@ -15,4 +15,4 @@ number = int(input())
 
 for i in range(number):
     print(random_value(limit), end=' ')
-    time.sleep(time.time() % 5)
+    time.sleep(0.25)
