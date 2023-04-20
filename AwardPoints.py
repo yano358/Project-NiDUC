@@ -1,6 +1,29 @@
 from math import atan2, sqrt, pi
 
 
+pts = {
+    1:13,
+    2:4,
+    3:18,
+    4:1,
+    5:20,
+    6:5,
+    7:12,
+    8:9,
+    9:14,
+    10:11,
+    11:8,
+    12:16,
+    13:7,
+    14:19,
+    15:3,
+    16:17,
+    17:2,
+    18:15,
+    19:10,
+    20:6
+}
+
 #given coordinates of where the shot landed, returns the points for that singular shot
 def calculatePoints(xCord, yCord):
     angle = calcAngle(xCord,yCord)
@@ -9,47 +32,7 @@ def calculatePoints(xCord, yCord):
         if angle > (i % 360) and angle <= ((i + 18)%360):
             area = 1 + (i - 9) / 18
     #checks for amount of points in area shot landed in
-    match area: 
-        case 1:
-            points = 13
-        case 2:
-            points = 4
-        case 3:
-            points = 18
-        case 4:
-            points = 1
-        case 5:
-            points = 20
-        case 6:
-            points = 5
-        case 7:
-            points = 12
-        case 8:
-            points = 9
-        case 9:
-            points = 14
-        case 10:
-            points = 11
-        case 11:
-            points = 8
-        case 12:
-            points = 16
-        case 13:
-            points = 7
-        case 14:
-            points = 19
-        case 15:
-            points = 3
-        case 16:
-            points = 17
-        case 17:
-            points = 2
-        case 18:
-            points = 15
-        case 19:
-            points = 10
-        case 20:
-            points = 6
+    points = pts(area)
         
     #calculates the modifier of points, 0 if the shot was beyond the radius
     line_length = sqrt(xCord*xCord + yCord * yCord)
