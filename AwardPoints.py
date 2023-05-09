@@ -25,8 +25,9 @@ pts = {
     20:6
 }
 
-#given coordinates of where the shot landed, returns the points for that singular shot
-def calculatePoints(xCord, yCord):
+
+# Given coordinates of where the shot landed, returns the points for that single shot.
+def calculate_points(xCord, yCord):
     angle = calcAngle(xCord,yCord)
     #calculates which area would the shot land in
     area = 0
