@@ -1,88 +1,85 @@
 from math import sin, cos, pi, log1p
 from matplotlib import pyplot as plt
-#this is only used for generation of gaussian distribution
-import random as rd
+# This is only used for generation of gaussian distribution.
 
-#our random value generator
+import random as rd
+# Our random value generator.
+
 from rng import random_value
 import AwardPoints
 from createCsv import create
-#Legacy comments
-#test params below, sg ideal ranges-> >1 to 4:
-#sg is an inverse of sigma so we can have the logic of bigger number -> more accurate machine
-#This will create a distribution of points on a circle based on the "sg"
+# Legacy comments
+# Test params below, 'sg' ideal ranges -> >1 to 4:
+# 'sg' is an inverse of sigma. It allows us to have the logic of a bigger number -> more accurate machine
+# This will create a distribution of points on a circle based on the "sg"
 
-def distribute():
+
+def distribute(number_of_players, max_number_of_rounds, shots_per_round):
+    coefficient = 5  # TO CHANGE LATER
     points = []
-    coords = generateCircleArray() #create circle
-    shotsPerRound = 24 
-    sigCurr = 1.0
-    sigBegin = sigCurr
-    sigEnd = 2.5
-    #one round has (shotsPerRound) throws * ((sigEnd - sigCurr) / 0.1) rounds in a match
-    while round(sigCurr,1) <= sigEnd:
-        for y in range(shotsPerRound):
-            randCoord = random_value(len(coords)-1) #pick random index of coords
-            gaussSample = generateGauss(sigCurr)
+    coords = generate_circle_array()  # Create circle.
+    sigma_begin = 1.3
+    sigma_current = sigma_begin
 
-            value = coords[randCoord] #value to multiply
+    # One round has (shots_per_round) throws * 10 rounds in a match.
+    for n in range(number_of_players):
+        number_of_rounds = 0
+        while number_of_rounds <= int(max_number_of_rounds):
+            for y in range(shots_per_round):
+                rand_coord = random_value(len(coords)-1)  # Pick random index of coords.
+                gauss_sample = generate_gauss(sigma_current)
 
-            #move the point toward the center
-            xCord = value[0]*gaussSample
-            yCord = value[1]*gaussSample
+                value = coords[rand_coord]  # The value to multiply.
 
-            #compression for mor randomness
-            if(random_value(10) >= 8):
-                yCord = cordCompression(yCord)
-                plt.plot(xCord,yCord,marker="o",markersize=5,markeredgecolor="black",markerfacecolor="black")
-                points.append(AwardPoints.calculatePoints(xCord=xCord,yCord=yCord))
-                continue
-            if(random_value(10)>= 8):
-                xCord = cordCompression(yCord)
-                plt.plot(xCord,yCord,marker="o",markersize=5,markeredgecolor="yellow",markerfacecolor="yellow")
-                points.append(AwardPoints.calculatePoints(xCord=xCord,yCord=yCord))
-                continue
-        
-            #add to graph
-            plt.plot(xCord, yCord, marker="o", markersize=5, markeredgecolor="blue", markerfacecolor="green")
+                # Move the point towards the centre.
+                x_cord = value[0] * gauss_sample
+                y_cord = value[1] * gauss_sample
 
-            points.append(AwardPoints.calculatePoints(xCord=xCord,yCord=yCord))
-        
-        sigCurr += 0.1
-        
-
-    create(sigBegin = sigBegin, sigEnd = sigEnd, shotsPerRound = shotsPerRound , points = points)
-    
-    #plot circle
-    for x in range(len(coords)):
-        plt.plot((coords[x][0]), coords[x][1], marker="o", markersize=5, markeredgecolor="red", markerfacecolor="green")
-    plt.show()
+                # Compression for more randomness.
+                if random_value(10) >= 8:
+                    y_cord = cord_compression(y_cord)
+                    points.append(AwardPoints.calculate_points(xCord=x_cord, yCord=y_cord))
+                    continue
+                if random_value(10) >= 8:
+                    x_cord = cord_compression(y_cord)
+                    points.append(AwardPoints.calculate_points(xCord=x_cord, yCord=y_cord))
+                    continue
+                points.append(AwardPoints.calculate_points(xCord=x_cord, yCord=y_cord))
+            number_of_rounds += 1
+        create(rounds=max_number_of_rounds, coefficient=coefficient, sigma_current=sigma_current, shots_per_round=shots_per_round, points=points, player_index=n + 1)
+        coefficient += 2
+        sigma_current += 0.2
+        points.clear()
     print(len(points))
     print(points)
 
-#generates coordinates of a circle
-def generateCircleArray():
+
+# Generates coordinates of a circle.
+def generate_circle_array():
     radius = 5
     coords = []
 
     theta = 0
-    resolution = 0.05 #sets the amount of coords generated for the circle, lower means more coords
-    while theta < 2*pi:
-        coords.append((radius*cos(theta), radius*sin(theta)))
-        theta+=resolution
+    resolution = 0.05  # Sets the amount of coords generated for the circle, lower means more coords.
+    while theta < 2 * pi:
+        coords.append((radius * cos(theta), radius * sin(theta)))
+        theta += resolution
     return coords
 
-#generate gaussian distribution with mean 0 and stddev of sg^-1
-def generateGauss(sg):
-    sample = rd.gauss(0.0,1/sg)
+
+# Generate gaussian distribution with mean 0 and stddev of sg^-1.
+def generate_gauss(sg):
+    sample = rd.gauss(0.0, 1/sg)
     while sample > 1 or sample < -1:
-        sample = rd.gauss(0.0,sg)
+        sample = rd.gauss(0.0, sg)
     return sample
 
-#this function will compress a coordinate in order to add more randomness to the simulation
-def cordCompression(cordToCompress):
-    compressed = 2.9*log1p(0.1*cordToCompress+1)
+
+# This function will compress a coordinate in order to add more randomness to the simulation.
+def cord_compression(cord_to_compress):
+    compressed = 2.9 * log1p(0.1 * cord_to_compress + 1)
     return compressed
 
+
 if __name__ == "__main__":
-    distribute()
+    distribute(6, 10, 24)
