@@ -2,7 +2,7 @@ from math import atan2, sqrt, pi
 
 
 pts = {
-    0:13,
+    0:6,
     1:13,
     2:4,
     3:18,
@@ -37,22 +37,24 @@ def calculate_points(xCord, yCord):
     #checks for amount of points in area shot landed in
     points = pts[area]
     
+    #this was done based on the DartBoard.png
+    #10% > 41% > 7% > 30% > 12% 
     #calculates the modifier of points, 0 if the shot was beyond the radius
-    line_length = sqrt(xCord*xCord + yCord * yCord)
-    if line_length <= 0.5:
+    line_length = sqrt( (abs(xCord) * abs(xCord)) + (abs(yCord) * abs(yCord)))
+    if line_length <= 5.0 * 0.1:
         points = 50
         point_mod = 1
         multInfo = False
 
-    elif line_length <= 3.0 :
+    elif line_length <= 5.0 * 0.51:
         point_mod = 1
         multInfo = False
 
-    elif line_length <= 3.25:
+    elif line_length <= 5.0 * 0.58:
         point_mod = 3
         multInfo = True
 
-    elif line_length <= 4.75:
+    elif line_length <= 5.0 * 0.88:
         point_mod = 1
         multInfo = False
 

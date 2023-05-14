@@ -13,17 +13,19 @@ from createCsv import create
 # 'sg' is an inverse of sigma. It allows us to have the logic of a bigger number -> more accurate machine
 # This will create a distribution of points on a circle based on the "sg"
 
+from DartBoard import *
 
 def distribute(number_of_players, max_number_of_rounds, shots_per_round):
     coefficient = 5  # TO CHANGE LATER
     points = []
     coords = generate_circle_array()  # Create circle.
+    shotCoords = []
     sigma_begin = 1.3
     sigma_current = sigma_begin
-
+    
     # One round has (shots_per_round) throws * 10 rounds in a match.
     for n in range(number_of_players):
-        number_of_rounds = 0
+        number_of_rounds = 1
         while number_of_rounds <= int(max_number_of_rounds):
             for y in range(shots_per_round):
                 rand_coord = random_value(len(coords)-1)  # Pick random index of coords.
@@ -34,24 +36,38 @@ def distribute(number_of_players, max_number_of_rounds, shots_per_round):
                 # Move the point towards the centre.
                 x_cord = value[0] * gauss_sample
                 y_cord = value[1] * gauss_sample
+                
 
                 # Compression for more randomness.
                 if random_value(10) >= 8:
                     y_cord = cord_compression(y_cord)
                     points.append(AwardPoints.calculate_points(xCord=x_cord, yCord=y_cord))
+                    shotCoords.append([x_cord,y_cord])
                     continue
+
                 if random_value(10) >= 8:
                     x_cord = cord_compression(y_cord)
                     points.append(AwardPoints.calculate_points(xCord=x_cord, yCord=y_cord))
+                    shotCoords.append([x_cord,y_cord])
                     continue
+
+                shotCoords.append([x_cord,y_cord])
                 points.append(AwardPoints.calculate_points(xCord=x_cord, yCord=y_cord))
+
             number_of_rounds += 1
-        create(rounds=max_number_of_rounds, coefficient=coefficient, sigma_current=sigma_current, shots_per_round=shots_per_round, points=points, player_index=n + 1)
+        create(rounds=max_number_of_rounds, coefficient=coefficient,
+                sigma_current=sigma_current, shots_per_round=shots_per_round,
+                  points=points, player_index=n + 1)
+        
+        if (True):
+            dartBoard = DartBoard(player = n + 1, shots = shotCoords, maxRounds = max_number_of_rounds, maxShots = shots_per_round)
+            dartBoard.run()
+        
         coefficient += 2
         sigma_current += 0.2
+        shotCoords.clear()
         points.clear()
-    print(len(points))
-    print(points)
+    
 
 
 # Generates coordinates of a circle.
