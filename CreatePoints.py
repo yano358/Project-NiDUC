@@ -1,51 +1,59 @@
 from math import sin, cos, pi, log1p
-from matplotlib import pyplot as plt
-# This is only used for generation of gaussian distribution.
 
+
+# This is only used for generation of gaussian distribution.
 import random as rd
 # Our random value generator.
 
 from rng import random_value
 import AwardPoints
 from createCsv import create
-# Legacy comments
-# Test params below, 'sg' ideal ranges -> >1 to 4:
-# 'sg' is an inverse of sigma. It allows us to have the logic of a bigger number -> more accurate machine
-# This will create a distribution of points on a circle based on the "sg"
+from getCoefficient import GenerateCoeff as gen
 
 from DartBoard import *
 
 def distribute(number_of_players, max_number_of_rounds, shots_per_round):
-    coefficient = 5  # TO CHANGE LATER
     points = []
     coords = generate_circle_array()  # Create circle.
     shotCoords = []
-    sigma_begin = 1.3
+
+    #sigma is the "accuracy parameter", ideal ranges are 1 to 5
+    sigma_begin = 1.1
     sigma_current = sigma_begin
     
     # One round has (shots_per_round) throws * 10 rounds in a match.
     for n in range(number_of_players):
         number_of_rounds = 1
         while number_of_rounds <= int(max_number_of_rounds):
+            offset = False
             for y in range(shots_per_round):
+                
                 rand_coord = random_value(len(coords)-1)  # Pick random index of coords.
-                gauss_sample = generate_gauss(sigma_current)
+                gauss_samplex = generate_gauss(sigma_current)
+                gauss_sampley = generate_gauss(sigma_current)
 
+                coefficientx = gen() #20% chance for an offset, this can either help or sabotage
+                coefficienty = gen()
+                if(coefficientx != 0 or coefficienty != 0 ):
+                    offset = True
+                else:
+                    offset = False
                 value = coords[rand_coord]  # The value to multiply.
 
-                # Move the point towards the centre.
-                x_cord = value[0] * gauss_sample
-                y_cord = value[1] * gauss_sample
+                # Move the point towards the centre, add offset
+                x_cord = value[0] * gauss_samplex
+                y_cord = value[1] * gauss_sampley
+                x_cord += coefficientx
+                y_cord += coefficienty
                 
-
-                # Compression for more randomness.
-                if random_value(10) >= 8:
+                # Compression for more randomness. , 10% for each cord to land in a very specific area
+                if random_value(10) >= 9:
                     y_cord = cord_compression(y_cord)
                     points.append(AwardPoints.calculate_points(xCord=x_cord, yCord=y_cord))
                     shotCoords.append([x_cord,y_cord])
                     continue
 
-                if random_value(10) >= 8:
+                if random_value(10) >= 9:
                     x_cord = cord_compression(y_cord)
                     points.append(AwardPoints.calculate_points(xCord=x_cord, yCord=y_cord))
                     shotCoords.append([x_cord,y_cord])
@@ -55,7 +63,7 @@ def distribute(number_of_players, max_number_of_rounds, shots_per_round):
                 points.append(AwardPoints.calculate_points(xCord=x_cord, yCord=y_cord))
 
             number_of_rounds += 1
-        create(rounds=max_number_of_rounds, coefficient=coefficient,
+        create(rounds=max_number_of_rounds, offset=offset,
                 sigma_current=sigma_current, shots_per_round=shots_per_round,
                   points=points, player_index=n + 1)
         
@@ -63,7 +71,6 @@ def distribute(number_of_players, max_number_of_rounds, shots_per_round):
             dartBoard = DartBoard(player = n + 1, shots = shotCoords, maxRounds = max_number_of_rounds, maxShots = shots_per_round)
             dartBoard.run()
         
-        coefficient += 2
         sigma_current += 0.2
         shotCoords.clear()
         points.clear()
@@ -98,4 +105,5 @@ def cord_compression(cord_to_compress):
 
 
 if __name__ == "__main__":
-    distribute(6, 10, 24)
+    #match is 3 throws/8 rounds, we are doing 8 throws/3 rounds which is the same
+    distribute(number_of_players=6,shots_per_round=8,max_number_of_rounds=3)
