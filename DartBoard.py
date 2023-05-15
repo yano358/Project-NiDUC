@@ -35,7 +35,7 @@ class DartBoard():
             if(self.roundCurr > self.maxRounds):
                 self.top.destroy()
                 return
-            
+            self.roundLabel.config(text = "Runda: " + str(self.roundCurr))
             self.drawRound(self.roundCurr)
             
 
