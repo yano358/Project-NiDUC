@@ -1,7 +1,7 @@
 import csv
 
 
-def create(rounds, coefficient, sigma_current, shots_per_round, points, player_index=int):
+def create(rounds, offset, sigma_current, shots_per_round, points, player_index=int):
     number = str(player_index)
 
     with open('distribution' + number + '.csv', 'w', newline="") as file:
@@ -14,7 +14,7 @@ def create(rounds, coefficient, sigma_current, shots_per_round, points, player_i
             sum_of_points_cond = sum_elements_with_bool(points, shots_taken, shots_taken + shots_per_round - 1)
             shots_taken += shots_per_round
 
-            writer.writerow([i + 1, sum_of_points, sum_of_points_cond, "%.2f" % (sum_of_points / shots_per_round), "%.2f" % sigma_current, coefficient])
+            writer.writerow([i + 1, sum_of_points, sum_of_points_cond, "%.2f" % (sum_of_points / shots_per_round), "%.2f" % sigma_current, offset])
             
 
 def sum_elements_range(arr, start_idx, end_idx):
