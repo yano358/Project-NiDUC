@@ -1,6 +1,6 @@
 from tkinter import *
 from PIL import ImageTk, Image
-#GUI
+# GUI
 import time
 
 class DartBoard():

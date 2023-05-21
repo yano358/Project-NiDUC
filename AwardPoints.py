@@ -68,6 +68,7 @@ def calculate_points(xCord, yCord):
 
     return points * point_mod, multInfo
 
-#returns angle of a line between the point and (0,0)
+
+# Returns angle of a line between the point and (0,0)
 def calcAngle(xCord, yCord):
     return (270 - atan2(0 - xCord, 0 - yCord) * 180 / pi) % 360
